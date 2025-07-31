@@ -1,8 +1,8 @@
 FROM debian AS build
 
-RUN apt-get update; apt-get install cmake curl libssl-dev libcurl4-openssl-dev zlib1g-dev libevent-dev git; 
+RUN apt-get update; apt-get install -y cmake g++ curl python3 libssl-dev libcurl4-openssl-dev zlib1g-dev libevent-dev git; 
 
-RUN git clone --recurse-submodules https://github.com/transmission/transmission transmission; cd transmission; cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo; cd build; cmake --build 
+RUN git clone --recurse-submodules https://github.com/transmission/transmission transmission; cd transmission; cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo; cd build; cmake --build .
 
 FROM polkaned/expressvpn
 
