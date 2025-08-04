@@ -4,6 +4,9 @@ set -e
 # Build the Docker image
 docker build -t torrent-container .
 
+# Get the ExpressVPN API key from the environment
+EXPRESSVPN_API_KEY=$(cat .env | grep EXPRESSVPN_API_KEY | cut -d '=' -f2)
+
 # Run the container, passing the magnet link as an argument
 MAGNET_LINK="$1"
 if [ -z "$MAGNET_LINK" ]; then
@@ -20,7 +23,7 @@ if [ -z "$FILE_IN_CONTAINER" ]; then
 fi
 
 # Run the container and wait for it to finish
-CONTAINER_ID=$(docker run -d torrent-container "$MAGNET_LINK")
+CONTAINER_ID=$(docker run -d torrent-container --env MAGNET_LINK="$MAGNET_LINK" --env ACTIVATION_CODE="$EXPRESSVPN_API_KEY")
 docker wait "$CONTAINER_ID"
 
 # Copy the file out of the container
