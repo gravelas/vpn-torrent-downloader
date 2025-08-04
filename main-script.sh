@@ -11,8 +11,8 @@ if [ -z "$MAGNET_LINK" ]; then
   exit 1
 fi
 
-FILE_IN_CONTAINER="$2"
-DEST_PATH="${3:-.}"
+FILE_IN_CONTAINER="/root/Downloads/"
+DEST_PATH="${2:-.}"
 
 if [ -z "$FILE_IN_CONTAINER" ]; then
   echo "Usage: $0 <magnet_link> <file_to_copy_from_container> [destination_path]"
