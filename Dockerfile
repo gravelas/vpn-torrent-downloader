@@ -6,5 +6,10 @@ RUN git clone --recurse-submodules https://github.com/transmission/transmission 
 
 FROM polkaned/expressvpn
 
+ENV MAGNET_LINK=""
+
 COPY --from=build transmission/build/daemon/transmission-daemon transmission/build/utils/tranmission-* /usr/bin/
 
+COPY entrypoint.sh /tmp/entrypoint.sh
+
+ENTRYPOINT [ "/bin/bash", "/tmp/entrypoint.sh", "$MAGNET_LINK" ]
