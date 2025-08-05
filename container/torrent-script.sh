@@ -27,7 +27,7 @@ echo "Magnet link added as torrent ID $TORRENT_ID. Waiting for download to finis
 
 while true; do
   STATUS=$(transmission-remote --torrent "$TORRENT_ID" --info | grep "State:" | awk '{print $2}')
-  if [ "$STATUS" = "Stopped" ]; then
+  if [ "$STATUS" = "Seeding" ]; then
     echo "Download finished."
     break
   fi
