@@ -14,7 +14,7 @@ if [ -z "$MAGNET_LINK" ]; then
   exit 1
 fi
 
-FILE_IN_CONTAINER="/root/Downloads/"
+FILE_IN_CONTAINER="/root/Downloads/."
 DEST_PATH="${2:-.}"
 
 if [ -z "$DEST_PATH" ]; then
