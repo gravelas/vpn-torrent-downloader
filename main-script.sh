@@ -4,9 +4,6 @@ set -e
 # Build the Docker image
 docker build -t torrent-container container
 
-# Get the ExpressVPN API key from the environment
-EXPRESSVPN_API_KEY=$(cat .env | grep EXPRESSVPN_API_KEY | cut -d '=' -f2)
-
 # Run the container, passing the magnet link as an argument
 MAGNET_LINK="$1"
 if [ -z "$MAGNET_LINK" ]; then
@@ -24,12 +21,12 @@ fi
 
 # Run the container and wait for it to finish
 CONTAINER_ID=$(docker run -e MAGNET_LINK=$MAGNET_LINK \
-  -e ACTIVATION_CODE=$EXPRESSVPN_API_KEY \
   --cap-add=NET_ADMIN \
   --device=/dev/net/tun \
   --privileged \
   --detach=true \
   --tty=true \
+  -v $(pwd)/config:/config \
   torrent-container /tmp/torrent-script.sh "$MAGNET_LINK")
 
 docker wait "$CONTAINER_ID"

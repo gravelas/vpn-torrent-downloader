@@ -1,13 +1,13 @@
-FROM polkaned/expressvpn
+FROM linuxserver/wireguard
 
 ENV MAGNET_LINK=""
 
-RUN apt-get update && \
-    apt-get install -y transmission-daemon transmission-cli && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk add --no-cache transmission-daemon transmission-cli transmission-remote netcat-openbsd
 
 COPY torrent-script.sh /tmp/torrent-script.sh
+
+ENV TR_CURL_VERBOSE=1
 
 RUN echo "net.core.rmem_max = 4194304" >> /etc/sysctl.conf && \
     echo "net.core.wmem_max = 1048576" >> /etc/sysctl.conf && \
