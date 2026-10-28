@@ -1,7 +1,5 @@
 FROM linuxserver/wireguard
 
-ENV MAGNET_LINK=""
-
 RUN apk update && \
     apk add --no-cache transmission-daemon transmission-cli transmission-remote netcat-openbsd
 

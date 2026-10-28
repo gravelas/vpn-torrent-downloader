@@ -1,10 +1,8 @@
 #!/bin/bash
 set -e
 
-MAGNET_LINK="$1"
-
-if [ -z "$MAGNET_LINK" ]; then
-  echo "Usage: $0 \"<magnet_link>\""
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $0 \"<magnet_link>\" [\"<magnet_link>\" ...]"
   exit 1
 fi
 
@@ -15,22 +13,20 @@ TRANS_PID=$!
 # Wait for transmission-daemon to start
 sleep 5
 
-# Add the magnet link to Transmission
-TORRENT_ID=$(transmission-remote --add "$MAGNET_LINK" | grep -oE 'Torrent added.* ([0-9]+)' | awk '{print $NF}')
+# Add each magnet link to Transmission
+for MAGNET_LINK in "$@"; do
+  transmission-remote --add "$MAGNET_LINK"
+done
 
-if [ -z "$TORRENT_ID" ]; then
-  # Fallback: get the latest torrent ID
-  TORRENT_ID=$(transmission-remote --list | awk 'NR==2 {print $1}')
-fi
-
-echo "Magnet link added as torrent ID $TORRENT_ID. Waiting for download to finish..."
+echo "Added $# magnet link(s). Waiting for all downloads to finish..."
 
 while true; do
-  STATUS=$(transmission-remote --torrent "$TORRENT_ID" --info | grep "Percent Done:" | awk '{print $3}')
-  if [ "$STATUS" = "100%" ]; then
-    echo "Download finished."
+  PERCENTS=$(transmission-remote --torrent all --info | grep "Percent Done:" | awk '{print $3}')
+  COUNT=$(echo "$PERCENTS" | grep -c . || true)
+  DONE=$(echo "$PERCENTS" | grep -cx "100%" || true)
+  if [ "$COUNT" -gt 0 ] && [ "$DONE" -eq "$COUNT" ]; then
+    echo "All downloads finished."
     break
   fi
   sleep 10
 done
-
