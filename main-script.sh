@@ -7,15 +7,24 @@ usage() {
 }
 
 DEST_PATH="."
-while getopts "o:" opt; do
-  case "$opt" in
-    o) DEST_PATH="$OPTARG" ;;
-    *) usage ;;
+MAGNET_LINKS=()
+# -o may appear anywhere, before or after the magnet links
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -o)
+      [ "$#" -ge 2 ] || usage
+      DEST_PATH="$2"
+      shift 2
+      ;;
+    -*) usage ;;
+    *)
+      MAGNET_LINKS+=("$1")
+      shift
+      ;;
   esac
 done
-shift $((OPTIND - 1))
 
-if [ "$#" -eq 0 ] || [ -z "$DEST_PATH" ]; then
+if [ "${#MAGNET_LINKS[@]}" -eq 0 ] || [ -z "$DEST_PATH" ]; then
   usage
 fi
 
@@ -32,7 +41,7 @@ CONTAINER_ID=$(docker run \
   --detach=true \
   --tty=true \
   -v $(pwd)/config:/config \
-  torrent-container /tmp/torrent-script.sh "$@")
+  torrent-container /tmp/torrent-script.sh "${MAGNET_LINKS[@]}")
 
 docker wait "$CONTAINER_ID"
 
